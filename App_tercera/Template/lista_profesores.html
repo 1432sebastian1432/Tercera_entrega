@@ -1,0 +1,82 @@
+{% extends "padre.html" %}
+
+{% load static %}
+
+
+
+{% block contenido %}
+
+    <main>
+        <div class="container">
+            <div class="row">
+                <div class="col-12  col-md-4">
+                    <div class="card">
+                        <img src="{% static 'App_tercera/assets/img/profesor1.jpg' %}"/>
+                        <div class="card-body">
+                            <h5 class="card-title">Alejandro Luna</h5>
+                            <p class="card-text">Email: fake_email1@example.com</p>
+                            <a class="btn btn-danger" href="">Profesor de literatura</a>
+                        </div>
+                    </div>
+                   
+
+                </div>
+
+                <div class="col-12  col-md-4">
+                    <div class="card">
+                        <img src="{% static 'App_tercera/assets/img/profesor2.jpg' %}"/>
+                        <div class="card-body">
+                            <h5 class="card-title">Ramon Miro</h5>
+                            <p class="card-text">Email: example.fake2@email.com</p>
+                            <a class="btn btn-danger" href="">Profesor de historia</a>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="col-12  col-md-4">
+                    <div class="card">
+                        <img src="{% static 'App_tercera/assets/img/profesor3.jpg' %}"/>
+                        <div class="card-body">
+                            <h5 class="card-title">Pablo romero</h5>
+                            <p class="card-text">Email: notreal.email3@test.com</p>
+                            <a class="btn btn-danger" href="">Profesor de Programacion</a>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="row">
+                <div class="col-12  col-md-6">
+                    <div class="card">
+                        <img src="{% static 'App_tercera/assets/img/profesor4.jpg' %}"/>
+                        <div class="card-body">
+                            <h5 class="card-title">Sebastian Diaz</h5>
+                            <p class="card-text">Email: fakeaddress_4@nomail.net</p>
+                            <a class="btn btn-danger" href="">Profesor de Matematica</a>
+
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="col-12  col-md-6">
+                    <div class="card">
+                        <img src="{% static 'App_tercera/assets/img/profesor5.jpg' %}"/>
+                        <div class="card-body">
+                            <h5 class="card-title">Leandro Peralta</h5>
+                            <p class="card-text">Emai:l5.fake@notreal.org</p>
+                            <a class="btn btn-danger" href="">Profesor de Metodologia</a>
+                                                      
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+
+
+{% endblock %}

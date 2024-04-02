@@ -1,0 +1,80 @@
+{% extends "padre.html" %}
+
+{% load static %}
+
+
+
+{% block contenido %}
+
+    <main>
+        <div class="container">
+            <div class="row">
+                <div class="col-12  col-md-4">
+                    <div class="card">
+                        <img src="{% static 'App_tercera/assets/img/alumno1.jpg' %}"/>
+                        <div class="card-body">
+                            <h5 class="card-title">Ramon Romero</h5>
+                            <p class="card-text">Comentario: Muy útil!</p>
+                            <a class="btn btn-danger" href="">Enviar mensaje</a>
+                        </div>
+                    </div>
+                   
+
+                </div>
+
+                <div class="col-12  col-md-4">
+                    <div class="card">
+                        <img src="{% static 'App_tercera/assets/img/alumno2.jpg' %}"/>
+                        <div class="card-body">
+                            <h5 class="card-title">Claudio Gonzales</h5>
+                            <p class="card-text">Comentario: Genial</p>
+                            <a class="btn btn-danger" href="">Enviar mensaje</a>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="col-12  col-md-4">
+                    <div class="card">
+                        <img src="{% static 'App_tercera/assets/img/alumno3.jpg' %}"/>
+                        <div class="card-body">
+                            <h5 class="card-title">Ramon Palomino</h5>
+                            <p class="card-text">Comentario: Me gusto mucho el curso</p>
+                            <a class="btn btn-danger" href="">Enviar mensaje</a>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="row">
+                <div class="col-12  col-md-6">
+                    <div class="card">
+                        <img src="{% static 'App_tercera/assets/img/alumno4.jpg' %}"/>
+                        <div class="card-body">
+                            <h5 class="card-title">Ramon Altamirano</h5>
+                            <p class="card-text">Comentario: Interesante</p>
+                            <a class="btn btn-danger" href="">Enviar mensaje</a>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="col-12  col-md-6">
+                    <div class="card">
+                        <img src="{% static 'App_tercera/assets/img/alumno5.jpg' %}"/>
+                        <div class="card-body">
+                            <h5 class="card-title">Pablo Diaz</h5>
+                            <p class="card-text">Comentraio: Creativo</p>
+                            <a class="btn btn-danger" href="">Enviar mensaje</a>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+
+
+{% endblock %}
