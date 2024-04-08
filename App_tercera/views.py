@@ -3,8 +3,6 @@ from App_tercera.models import Curso
 from django.http import HttpResponse
 from django.template import loader
 from App_tercera.forms import Curso_formulario
-from .models import Profesor
-
 
 # Create your views here.
 
@@ -28,14 +26,6 @@ def ver_cursos(request):
     plantilla = loader.get_template("cursos.html")
     documento = plantilla.render(dicc)
     return HttpResponse(documento)
-
-
-
-
-
-def lista_profesores(request):
-    profesores = Profesor.objects.all()
-    return render(request, 'lista_profesores.html', {'profesores': profesores})
 
 
 
