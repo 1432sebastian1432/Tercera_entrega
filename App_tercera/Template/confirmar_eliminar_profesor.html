@@ -1,0 +1,10 @@
+{% extends 'Padre.html' %}
+
+{% block content %}
+    <h1>Eliminar Profesor</h1>
+    <p>¿Estás seguro que deseas eliminar al profesor {{ profesor.nombre }}?</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit">Sí, eliminar</button>
+    </form>
+{% endblock %}

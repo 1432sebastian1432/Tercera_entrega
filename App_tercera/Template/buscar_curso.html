@@ -6,13 +6,26 @@
 {% block contenido %}  
   
     <h2>Buscar Curso</h2>
-    <form action="buscar" method="GET">
-        <p>Nombre</p>
+    <form action="buscar_curso1" method="GET">
+        <p>Nombre del curso</p>
         <input type="text" name="nombre" id="nombre">
+        <button>Buscar</button>
+    </form> 
+    
+    <h2>Buscar Profesor</h2>
+    <form action="buscar_profesor1" method="GET">
+        <p>Nombre del profesor</p>
+        <input type="text" name="nombre_y_apellido" id="nombre_profesor">
+        <button>Buscar</button>
+    </form> 
+    
+
+    <h2>Buscar Alumno</h2>
+    <form action="buscar_alumno1" method="GET">
+        <p>Nombre del alumno</p>
+        <input type="text" name="nombre_alumno" id="nombre_alumno">
         <button>Buscar</button>
     </form> 
 
 
-
 {% endblock %}
-    

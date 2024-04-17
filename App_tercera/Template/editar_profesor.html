@@ -1,0 +1,10 @@
+{% extends 'Padre.html' %}
+
+{% block content %}
+    <h1>Editar Profesor</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Guardar Cambios</button>
+    </form>
+{% endblock %}

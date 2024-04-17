@@ -1,14 +1,32 @@
 from django.urls import path
 from . import views
 
-
 urlpatterns = [
-    path("", views.inicio , name="home"),
-    path("ver_cursos", views.ver_cursos , name="cursos"),
-    #path("alta_curso/<nombre>", views.alta_curso),
-    path("alumnos", views.alumnos , name="alumnos"),
+    path("", views.inicio, name="home"),
+    path('profesores', views.lista_profesores, name='profesores'),
+    path("ver_cursos", views.ver_cursos, name="cursos"),
+    path("ver_alumnos", views.ver_alumnos, name="Alumnos"),
+    path("alumnos", views.alumnos, name="alumnos"),
     path("alta_curso", views.curso_formulario),
-    path("buscar_curso", views.buscar_curso),
-    path("buscar", views.buscar)
-    
-]
+    path("buscar_curso", views.buscar_curso, name="buscar curso"),
+    path('buscar_curso1', views.buscar_curso1, name='buscar_curso1'),
+    path('buscar_profesor', views.buscar_profesor, name='buscar_profesor'),
+    path("buscar_profesor1", views.buscar_profesor1, name="buscar_profesor1"),
+    path("elimina_curso/<int:id>", views.elimina_curso, name="elimina_curso"),
+    path("editar_curso/<int:id>", views.editar, name="editar_curso"),
+    path("buscar_alumno1", views.buscar_alumno1, name="buscar_alumno1"),
+    path('alumno_formulario/', views.alumno_formulario, name='alumno formulario'),
+    path('eliminar_alumno/<int:id>/', views.elimina_alumno, name='eliminar_alumno'),
+    path("editar_alumno/<int:id>", views.editar_alumno, name="editar_alumno"),
+    path("ver_alumnos/", views.ver_alumnos, name="ver_alumnos"),
+    path('agregar_profesor/', views.agregar_profesor, name='agregar_profesor'),
+    path("eliminar_profesor/<int:id>", views.eliminar_profesor, name="eliminar_profesor"),
+    path('ver_profesores/', views.ver_profesores, name='ver_profesores'),
+    path('profesor_formulario/', views.profesor_formulario_view, name='profesor_formulario'),
+    path('editar_profesor/<int:id>/', views.editar_profesor, name='editar_profesor'),
+
+    ]
+
+
+
+
