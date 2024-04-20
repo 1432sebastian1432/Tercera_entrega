@@ -1,13 +1,13 @@
 from django.urls import path
 from . import views
-
+from django.contrib.auth.views import LogoutView
 urlpatterns = [
     path("", views.inicio, name="home"),
     path('profesores', views.lista_profesores, name='profesores'),
     path("ver_cursos", views.ver_cursos, name="cursos"),
     path("ver_alumnos", views.ver_alumnos, name="Alumnos"),
     path("alumnos", views.alumnos, name="alumnos"),
-    path("alta_curso", views.curso_formulario),
+    path("alta_curso", views.curso_formulario_view),
     path("buscar_curso", views.buscar_curso, name="buscar curso"),
     path('buscar_curso1', views.buscar_curso1, name='buscar_curso1'),
     path('buscar_profesor', views.buscar_profesor, name='buscar_profesor'),
@@ -24,9 +24,13 @@ urlpatterns = [
     path('ver_profesores/', views.ver_profesores, name='ver_profesores'),
     path('profesor_formulario/', views.profesor_formulario_view, name='profesor_formulario'),
     path('editar_profesor/<int:id>/', views.editar_profesor, name='editar_profesor'),
+    path("login", views.login_request , name="Login"),
+    path("register", views.register , name="Register"),
+    path("logout" , LogoutView.as_view(template_name="logout.html") , name="Logout"),
+    path("editarPerfil" , views.editarPerfil , name="EditarPerfil"),
+    path('ver_alumnos/alta_alumno', views.alta_alumno, name='alta_alumno'),
+    path('agregar_curso/', views.agregar_curso, name='agregar_curso'),
+    path('guardar_alumno/', views.agregar_alumno, name='guardar_alumno'),
+    
 
     ]
-
-
-
-

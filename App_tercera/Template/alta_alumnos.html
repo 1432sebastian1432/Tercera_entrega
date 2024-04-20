@@ -1,0 +1,31 @@
+{% extends "padre.html" %}
+
+{% load static %}
+
+
+{% block contenido %}
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alta de Alumnos</title>
+</head>
+<body>
+    <h1>Alta de Alumnos</h1>
+    <form action="{% url 'alta_alumno' %}" method="post">
+        {% csrf_token %}
+        <label for="Nombre_y_Apellido">Nombre_y_Apellido:</label><br>
+        <input type="text" id="Nombre_y_Apellido" name="Nombre_y_Apellido"><br><br>
+        
+        <label for="Asignatura">Asignatura:</label><br>
+        <input type="text" id="Asignatura" name="Asignatura"><br><br>
+        
+        <button type="submit">Guardar</button>
+    </form>
+</body>
+</html>
+
+{% endblock %}

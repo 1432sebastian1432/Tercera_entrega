@@ -1,4 +1,11 @@
-<!-- formulario_alumno.html -->
+{% extends "padre.html" %}
+
+{% load static %}
+
+
+{% block contenido %}
+
+
 
 <form action="{% url 'guardar_alumno' %}" method="POST">
     {% csrf_token %}
@@ -10,3 +17,6 @@
     <br>
     <button type="submit">Guardar</button>
 </form>
+
+
+{% endblock %}

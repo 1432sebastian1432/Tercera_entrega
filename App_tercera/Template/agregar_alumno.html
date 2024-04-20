@@ -3,25 +3,24 @@
 {% load static %}
 
 
-{% block contenido %}
-
+{% block contenido %}  
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agregar Profesor</title>
+    <title>Agregar Alumno</title>
 </head>
 <body>
-    <h1>Agregar Profesor</h1>
-    <form action="{% url 'agregar_profesor' %}" method="post">
+    <h1>Agregar Alumno</h1>
+    <form action="{% url 'agregar_alumno' %}" method="post">
         {% csrf_token %}
-        <label for="Nombre_y_Apellido">Nombre y Apellido:</label><br>
+        <label for="Nombre_y_Apellido">Nombre_y_Apellido:</label><br>
         <input type="text" id="Nombre_y_Apellido" name="Nombre_y_Apellido" required><br><br>
         
-        <label for="Materia">Materia:</label><br>
-        <input type="text" id="Materia" name="Materia" required><br><br>
+        <label for="Asignatura">Asignatura:</label><br>
+        <input type="text" id="Asignatura" name="Asignatura" required><br><br>
         
         <button type="submit">Guardar</button>
     </form>

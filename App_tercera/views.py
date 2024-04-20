@@ -1,22 +1,42 @@
 from App_tercera.models import Curso
 from django.http import HttpResponse
 from django.template import loader
-from .forms import curso_formulario
+from .forms import CursoForm
 from .models import Profesor
 from django.shortcuts import render, redirect
 from .models import Profesor, Alumno
 from django.http import JsonResponse
 from .forms import AlumnoForm
 from .forms import ProfesorModelForm
+from django.contrib.auth.forms import AuthenticationForm , UserCreationForm
+from django.contrib.auth import login, authenticate
+
+
 
 def inicio(request):
     return render( request , "padre.html")
 
-#def alta_curso(request,nombre):
-    curso = Curso(nombre=nombre , camada=234512)
-    curso.save()
-    texto = f"Se guardo en la BD el curso: {curso.nombre} {curso.camada}"
-    return HttpResponse(texto)
+def alta_curso(request):
+    if request.method == 'POST':
+        nombre = request.POST.get('nombre')
+        camada = request.POST.get('camada')
+        nuevo_curso = Curso(nombre=nombre, camada=camada)
+        nuevo_curso.save()
+        texto = f"Se guardó en la BD el curso: {nuevo_curso.nombre}, Camada: {nuevo_curso.camada}"
+        return HttpResponse(texto)
+    else:
+        return render(request, 'alta_curso.html')
+    
+def alta_alumno(request):
+    if request.method == 'POST':
+        Nombre_y_Apellido = request.POST.get('Nombre_y_Apellido')
+        Asignatura = request.POST.get('Asignatura')
+        
+        if Nombre_y_Apellido and Asignatura:  # Verifica que se hayan proporcionado valores válidos
+            Alumno.objects.create(Nombre_y_Apellido=Nombre_y_Apellido, Asignatura=Asignatura)
+            return redirect('ver_alumnos')  # Redirigir a la página de visualización de alumnos
+
+    return render(request, 'alta_alumnos.html')  # Renderizar el formulario de alta de alumno
 
 def ver_cursos(request):
     cursos = Curso.objects.all()
@@ -26,8 +46,8 @@ def ver_cursos(request):
     return HttpResponse(documento)
 
 def ver_alumnos(request):
-    alumnos = Alumno.objects.all()  # Aquí corregimos el nombre de la variable
-    dicc = {"alumnos": alumnos}  # Corregimos el nombre de la clave del diccionario
+    alumnos = Alumno.objects.all()  
+    dicc = {"alumnos": alumnos}  
     plantilla = loader.get_template("lista_alumnos.html")
     documento = plantilla.render(dicc)
     return HttpResponse(documento)
@@ -37,7 +57,7 @@ def alumnos(request):
 
 def curso_formulario_view(request):  
     if request.method == "POST":
-        mi_formulario = curso_formulario(request.POST)  
+        mi_formulario = CursoForm(request.POST)  
         if mi_formulario.is_valid():
             datos = mi_formulario.cleaned_data
             curso = Curso(nombre=datos["nombre"], camada=datos["camada"])
@@ -121,7 +141,7 @@ def editar(request , id):
         
      
     else:
-        mi_formulario = curso_formulario(initial={"nombre":curso.nombre , "camada":curso.camada})
+        mi_formulario = CursoForm(initial={"nombre":curso.nombre , "camada":curso.camada})
     
     return render( request , "editar_curso.html" , {"mi_formulario": mi_formulario , "curso":curso})
 
@@ -190,6 +210,18 @@ def agregar_profesor(request):
         form = ProfesorModelForm()
     return render(request, 'agregar_profesor.html', {'form': form})
 
+def agregar_alumno(request):
+    if request.method == 'POST':
+        form = AlumnoForm(request.POST)
+        if form.is_valid():
+            Nombre_y_Apellido = form.cleaned_data['Nombre_y_Apellido']
+            Asignatura = form.cleaned_data['Asignatura']
+            Alumno.objects.create(Nombre_y_Apellido=Nombre_y_Apellido, Asignatura=Asignatura)
+            return redirect('ver_alumnos')
+    else:
+        form = AlumnoForm()
+    return render(request, 'agregar_alumno.html', {'form': form})
+
 def editar_profesor(request, id):
     profesor = Profesor.objects.get(id=id)
     if request.method == 'POST':
@@ -217,3 +249,68 @@ def profesor_formulario_view(request):
             curso.save()
             return render(request, "formulario.html")
     return render(request, "Resultado_busqueda_profesor.html")
+
+def login_request(request):
+
+    if request.method == "POST":
+        form = AuthenticationForm(request, data=request.POST)
+
+        if form.is_valid():
+
+            usuario = form.cleaned_data.get("username")
+            contra = form.cleaned_data.get("password")
+
+            user = authenticate(username=usuario , password=contra)
+
+            if user is not None:
+                login(request , user )
+                return render( request , "inicio.html" , {"mensaje":f"Bienvenido/a {usuario}", "usuario":usuario})
+            else:
+                return HttpResponse(f"Usuario no encontrado")
+        else:
+            return HttpResponse(f"FORM INCORRECTO {form}")
+
+
+    form = AuthenticationForm()
+    return render( request , "login.html" , {"form":form})
+
+def register(request):
+    
+    if request.method == "POST":
+        form = UserCreationForm(request.POST)
+
+        if form.is_valid():
+            form.save()
+            return HttpResponse("Usuario creado")
+
+    else:
+        form = UserCreationForm()
+    return render(request , "registro.html" , {"form":form})
+
+def editarPerfil(request):
+
+    usuario = request.user
+
+    if request.method == "POST":
+        pass
+
+    else:
+        miFormulario = UserEditForm(initial={"email":usuario.email})
+    
+    return render( request , "editar_perfil.html", {"miFormulario":miFormulario, "usuario":usuario})
+
+def agregar_curso(request):
+    if request.method == 'POST':
+        nombre = request.POST.get('nombre')
+        camada = request.POST.get('camada')
+        Curso.objects.create(nombre=nombre, camada=camada)
+        return redirect('ver_cursos')
+    return render(request, 'agregar_curso.html')
+
+def agregar_profesor(request):
+    if request.method == 'POST':
+        nombre_apellido = request.POST.get('Nombre_y_Apellido')
+        materia = request.POST.get('Materia')
+        Profesor.objects.create(Nombre_y_Apellido=nombre_apellido, Materia=materia)
+        return redirect('ver_profesores')
+    return render(request, 'agregar_profesor.html')
