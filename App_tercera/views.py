@@ -1,7 +1,7 @@
-from App_tercera.models import Curso
+from App_tercera.models import Curso, Avatar
 from django.http import HttpResponse
 from django.template import loader
-from .forms import CursoForm
+from .forms import CursoForm , UserEditForm
 from .models import Profesor
 from django.shortcuts import render, redirect
 from .models import Profesor, Alumno
@@ -10,6 +10,8 @@ from .forms import AlumnoForm
 from .forms import ProfesorModelForm
 from django.contrib.auth.forms import AuthenticationForm , UserCreationForm
 from django.contrib.auth import login, authenticate
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import logout
 
 
 
@@ -32,20 +34,33 @@ def alta_alumno(request):
         Nombre_y_Apellido = request.POST.get('Nombre_y_Apellido')
         Asignatura = request.POST.get('Asignatura')
         
-        if Nombre_y_Apellido and Asignatura:  # Verifica que se hayan proporcionado valores válidos
+        if Nombre_y_Apellido and Asignatura:  
             Alumno.objects.create(Nombre_y_Apellido=Nombre_y_Apellido, Asignatura=Asignatura)
-            return redirect('ver_alumnos')  # Redirigir a la página de visualización de alumnos
+            return redirect('ver_alumnos')  
 
-    return render(request, 'alta_alumnos.html')  # Renderizar el formulario de alta de alumno
+    return render(request, 'alta_alumnos.html')  
 
+@login_required
 def ver_cursos(request):
+    cursos = Curso.objects.all()
+    avatares = Avatar.objects.filter(user=request.user)
+    return render(request, 'cursos.html', {'cursos': cursos, 'avatares': avatares})
+
+def ver_alumnos(request):
+    alumnos = Alumno.objects.all()
+    avatares = Avatar.objects.filter(user=request.user)
+    return render(request, 'Lista_alumnos.html', {'alumnos': alumnos, 'avatares': avatares})
+
+
+#def ver_cursos(request):
     cursos = Curso.objects.all()
     dicc = {"cursos": cursos}
     plantilla = loader.get_template("cursos.html")
     documento = plantilla.render(dicc)
     return HttpResponse(documento)
 
-def ver_alumnos(request):
+#def ver_alumnos(request):
+   
     alumnos = Alumno.objects.all()  
     dicc = {"alumnos": alumnos}  
     plantilla = loader.get_template("lista_alumnos.html")
@@ -53,7 +68,9 @@ def ver_alumnos(request):
     return HttpResponse(documento)
 
 def alumnos(request):
-    return render(request , "alumnos.html")
+    avatares = Avatar.objects.filter(user=request.user.id)
+    
+    return render(request , "alumnos.html", {"url":avatares[0].imagen.url})
 
 def curso_formulario_view(request):  
     if request.method == "POST":
@@ -145,44 +162,19 @@ def editar(request , id):
     
     return render( request , "editar_curso.html" , {"mi_formulario": mi_formulario , "curso":curso})
 
-#def lista_profesores(request):
-    # Recuperar la lista de profesores desde la base de datos
-    profesores = Profesor.objects.all()
-
-    # Convertir la lista de profesores en un diccionario serializable
-    data = {
-        'profesores': list(profesores.values())
-    }
-
-    # Devolver los datos en formato JSON
-    return JsonResponse(data)
-
 def lista_profesores(request):
     profesores = Profesor.objects.all()
     return render(request, 'lista_profesores.html', {'profesores': profesores})
 
 def elimina_alumno(request, id):
-    # Buscar el alumno por su ID
+    
     alumno = Alumno.objects.get(id=id)
     
-    # Eliminar el alumno
+   
     alumno.delete()
     
-    # Redirigir a una página que muestre la lista actualizada de alumnos
+    
     return redirect('ver_alumnos')
-
-#def editar_alumno(request, id):
-    alumno = Alumno.objects.get(id=id)
-
-    if request.method == "POST":
-        formulario = AlumnoForm(request.POST, instance=alumno)
-        if formulario.is_valid():
-            formulario.save()
-            alumnos = Alumno.objects.all()
-            return render(request, "lista_alumnos.html", {"alumnos": alumnos})
-
-    formulario = AlumnoForm(instance=alumno)
-    return render(request, "editar_alumno.html", {"mi_formulario": formulario, "alumno": alumno})
 
 def editar_alumno(request, id):
     alumno = Alumno.objects.get(id=id)
@@ -191,16 +183,19 @@ def editar_alumno(request, id):
         formulario = AlumnoForm(request.POST, instance=alumno)
         if formulario.is_valid():
             formulario.save()
-            return redirect('lista_alumnos')  # Redirigir a la página de lista de alumnos después de editar
-
+            return redirect('lista_alumnos')  
+        
     formulario = AlumnoForm(instance=alumno)
     return render(request, "editar_alumno.html", {"mi_formulario": formulario, "alumno": alumno})
 
+
 def ver_profesores(request):
     profesores = Profesor.objects.all()
-    return render(request, 'ver_profesores.html', {'profesores': profesores})
+    avatares = Avatar.objects.filter(user=request.user)
+    return render(request, 'ver_profesores.html', {'profesores': profesores, 'avatares': avatares})
 
-def agregar_profesor(request):
+
+#def agregar_profesor(request):
     if request.method == 'POST':
         form = ProfesorModelForm(request.POST)
         if form.is_valid():
@@ -287,12 +282,22 @@ def register(request):
         form = UserCreationForm()
     return render(request , "registro.html" , {"form":form})
 
-def editarPerfil(request):
+def editar_perfil(request):
 
     usuario = request.user
 
     if request.method == "POST":
-        pass
+        
+        mi_formulario = UserEditForm(request.POST)
+
+        if mi_formulario.is_valid():
+
+            informacion = mi_formulario.cleaned_data
+            usuario.email = informacion["email"]
+            password = informacion["password1"]
+            usuario.set_password(password)
+            usuario.save()
+            return render(request , "inicio.html")
 
     else:
         miFormulario = UserEditForm(initial={"email":usuario.email})
@@ -314,3 +319,32 @@ def agregar_profesor(request):
         Profesor.objects.create(Nombre_y_Apellido=nombre_apellido, Materia=materia)
         return redirect('ver_profesores')
     return render(request, 'agregar_profesor.html')
+
+def login_request(request):
+
+    if request.method == "POST":
+        form = AuthenticationForm(request, data=request.POST)
+
+        if form.is_valid():
+
+            usuario = form.cleaned_data.get("username")
+            contra = form.cleaned_data.get("password")
+
+            user = authenticate(username=usuario , password=contra)
+
+            if user is not None:
+                login(request , user )
+                avatares = Avatar.objects.filter(user=request.user.id)
+                return render( request , "inicio.html" , {"url":avatares[0].imagen.url})
+            else:
+                return HttpResponse(f"Usuario no encontrado")
+        else:
+            return HttpResponse(f"FORM INCORRECTO {form}")
+
+
+    form = AuthenticationForm()
+    return render( request , "login.html" , {"form":form})
+
+def logout_view(request):
+    logout(request)
+    return redirect('home')

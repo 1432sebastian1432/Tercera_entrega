@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 class Curso(models.Model):
 
@@ -22,4 +23,11 @@ class Alumno(models.Model):
 
     def __str__(self):
         return f"Nombre: {self.Nombre_y_Apellido}"
+    
+class Avatar(models.Model):
+    user = models.ForeignKey(User , on_delete=models.CASCADE)
+    imagen = models.ImageField(upload_to="avatares" , null=True , blank=True)
+
+    def __str__(self):
+        return f"User: {self.user}  -  Imagen: {self.imagen}"
     
