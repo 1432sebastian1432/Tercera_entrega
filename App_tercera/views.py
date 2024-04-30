@@ -40,17 +40,19 @@ def alta_alumno(request):
 
     return render(request, 'alta_alumnos.html')  
 
-@login_required
 def ver_cursos(request):
     cursos = Curso.objects.all()
-    avatares = Avatar.objects.filter(user=request.user)
+    avatares = None
+    if request.user.is_authenticated:
+        avatares = Avatar.objects.filter(user=request.user)
     return render(request, 'cursos.html', {'cursos': cursos, 'avatares': avatares})
 
 def ver_alumnos(request):
     alumnos = Alumno.objects.all()
-    avatares = Avatar.objects.filter(user=request.user)
+    avatares = None
+    if request.user.is_authenticated:
+        avatares = Avatar.objects.filter(user=request.user)
     return render(request, 'Lista_alumnos.html', {'alumnos': alumnos, 'avatares': avatares})
-
 
 #def ver_cursos(request):
     cursos = Curso.objects.all()
@@ -145,7 +147,7 @@ def editar(request , id):
 
     if request.method == "POST":
 
-        mi_formulario = curso_formulario( request.POST )
+        mi_formulario = curso_formulario_view( request.POST )
         if mi_formulario.is_valid():
             datos = mi_formulario.cleaned_data
             curso.nombre = datos["nombre"]
@@ -188,10 +190,11 @@ def editar_alumno(request, id):
     formulario = AlumnoForm(instance=alumno)
     return render(request, "editar_alumno.html", {"mi_formulario": formulario, "alumno": alumno})
 
-
 def ver_profesores(request):
     profesores = Profesor.objects.all()
-    avatares = Avatar.objects.filter(user=request.user)
+    avatares = None
+    if request.user.is_authenticated:
+        avatares = Avatar.objects.filter(user=request.user)
     return render(request, 'ver_profesores.html', {'profesores': profesores, 'avatares': avatares})
 
 
@@ -229,11 +232,14 @@ def editar_profesor(request, id):
     return render(request, 'editar_profesor.html', {'form': form})
 
 def eliminar_profesor(request, id):
+    
     profesor = Profesor.objects.get(id=id)
-    if request.method == 'POST':
-        profesor.delete()
-        return redirect('ver_profesores')
-    return render(request, 'confirmar_eliminar_profesor.html', {'profesor': profesor})
+    
+    
+    profesor.delete()
+    
+    
+    return redirect('ver_profesores')
 
 def profesor_formulario_view(request):  
     if request.method == "POST":
@@ -321,30 +327,32 @@ def agregar_profesor(request):
     return render(request, 'agregar_profesor.html')
 
 def login_request(request):
-
     if request.method == "POST":
         form = AuthenticationForm(request, data=request.POST)
-
         if form.is_valid():
-
             usuario = form.cleaned_data.get("username")
             contra = form.cleaned_data.get("password")
 
-            user = authenticate(username=usuario , password=contra)
-
+            user = authenticate(username=usuario, password=contra)
             if user is not None:
-                login(request , user )
-                avatares = Avatar.objects.filter(user=request.user.id)
-                return render( request , "inicio.html" , {"url":avatares[0].imagen.url})
+                login(request, user)
+                # Buscamos los avatares asociados al usuario
+                avatares = Avatar.objects.filter(user=user)
+                # Si hay avatares, obtenemos la URL del primero si tiene un archivo asociado
+                if avatares.exists() and avatares.first().imagen:
+                    avatar_url = avatares.first().imagen.url
+                else:
+                    avatar_url = None
+
+                return render(request, "inicio.html", {"url": avatar_url})
             else:
-                return HttpResponse(f"Usuario no encontrado")
+                return HttpResponse("Usuario no encontrado")
         else:
             return HttpResponse(f"FORM INCORRECTO {form}")
-
-
-    form = AuthenticationForm()
-    return render( request , "login.html" , {"form":form})
-
+    else:
+        form = AuthenticationForm()
+        return render(request, "login.html", {"form": form})
+    
 def logout_view(request):
     logout(request)
     return redirect('home')

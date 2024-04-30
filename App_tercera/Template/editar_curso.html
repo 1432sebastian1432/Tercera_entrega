@@ -1,22 +1,22 @@
 {% extends "padre.html" %}
-
 {% load static %}
 
-
 {% block contenido %}
-
-
-
-<form action="{% url 'guardar_alumno' %}" method="POST">
-    {% csrf_token %}
-    <label for="nombre_apellido">Nombre y Apellido:</label>
-    <input type="text" id="nombre_apellido" name="nombre_apellido" required>
-    <br>
-    <label for="asignatura">Asignatura:</label>
-    <input type="text" id="asignatura" name="asignatura" required>
-    <br>
-    <button type="submit">Guardar</button>
-</form>
-
-
+    {% if user.is_authenticated and user.is_staff %}
+        <main class="container">
+            <h1 class="text-xl-center title">Agregar Nuevo Curso</h1>
+            <form action="{% url 'guardar_curso' %}" method="POST">
+                {% csrf_token %}
+                <label for="nombre">Nombre:</label>
+                <input type="text" id="nombre" name="nombre" required>
+                <br>
+                <label for="camada">Camada:</label>
+                <input type="text" id="camada" name="camada" required>
+                <br>
+                <button type="submit">Guardar</button>
+            </form>
+        </main>
+    {% else %}
+        <p>Debe iniciar sesión como administrador para acceder a esta página.</p>
+    {% endif %}
 {% endblock %}

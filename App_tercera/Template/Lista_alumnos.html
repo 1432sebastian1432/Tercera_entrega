@@ -5,7 +5,9 @@
 <main class="container">
     <h1 class="text-xl-center title"> Alumnos </h1>
 
-    <a href="alta_alumno" class="btn btn-primary btn-sm">Nuevo Alumno</a>
+    {% if user.is_authenticated and user.is_staff %}
+        <a href="alta_alumno" class="btn btn-primary btn-sm">Nuevo Alumno</a>
+    {% endif %}
 
     <table class="table">
         <thead>
@@ -13,17 +15,24 @@
                 <th>id</th>
                 <th>Nombre y Apellido</th>
                 <th>Asignatura</th>
+                {% if user.is_authenticated and user.is_staff %}
+                    <th>Acciones</th>
+                {% endif %}
             </tr>            
         </thead>
         <tbody>
             {% for alumno in alumnos %}
-            <tr>
-                <td>{{ alumno.id }}</td>
-                <td>{{ alumno.Nombre_y_Apellido }}</td>
-                <td>{{ alumno.Asignatura }}</td>
-                <td><a href="{% url 'eliminar_alumno' alumno.id %}" class="btn btn-danger btn-sm">BORRAR</a></td>
-                <td><a href="{% url 'editar_alumno' alumno.id %}" class="btn btn-warning btn-sm">EDITAR</a></td>
-            </tr>
+                <tr>
+                    <td>{{ alumno.id }}</td>
+                    <td>{{ alumno.Nombre_y_Apellido }}</td>
+                    <td>{{ alumno.Asignatura }}</td>
+                    {% if user.is_authenticated and user.is_staff %}
+                        <td>
+                            <a href="{% url 'eliminar_alumno' alumno.id %}" class="btn btn-danger btn-sm">BORRAR</a>
+                            <a href="{% url 'editar_alumno' alumno.id %}" class="btn btn-warning btn-sm">EDITAR</a>
+                        </td>
+                    {% endif %}
+                </tr>
             {% endfor %}
         </tbody>
     </table>

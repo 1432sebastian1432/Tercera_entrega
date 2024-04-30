@@ -2,12 +2,13 @@
 
 {% load static %}
 
-
 {% block contenido %}
     <main class="container">
         <h1 class="text-xl-center title"> Cursos </h1>
 
-        <a href="alta_curso" class="btn btn-primary btn-sm">Nuevo Curso</a>
+        {% if user.is_authenticated and user.is_staff %}
+            <a href="alta_curso" class="btn btn-primary btn-sm">Nuevo Curso</a>
+        {% endif %}
 
         <table class="table">
             <thead>
@@ -15,28 +16,26 @@
                     <th>id</th>
                     <th>nombre</th>
                     <th>camada</th>
+                    {% if user.is_authenticated and user.is_staff %}
+                        <th>Acciones</th>
+                    {% endif %}
                 </tr>            
             </thead>
             <tbody>
                 {% for n in cursos %}
-                <tr>
-                    <td>{{n.id}}</td>
-                    <td>{{n.nombre}}</td>
-                    <td>{{n.camada}}</td>
-                    <td><a href="{% url 'elimina_curso' n.id %}" class="btn btn-danger btn-sm">BORRAR</a></td>
-                    <td><a href="{% url 'editar_curso'  n.id %}" class="btn btn-warning btn-sm">EDITAR</a></td>
-                </tr>
-
+                    <tr>
+                        <td>{{n.id}}</td>
+                        <td>{{n.nombre}}</td>
+                        <td>{{n.camada}}</td>
+                        {% if user.is_authenticated and user.is_staff %}
+                            <td>
+                                <a href="{% url 'elimina_curso' n.id %}" class="btn btn-danger btn-sm">BORRAR</a>
+                                <a href="{% url 'editar_curso'  n.id %}" class="btn btn-warning btn-sm">EDITAR</a>
+                            </td>
+                        {% endif %}
+                    </tr>
                 {% endfor %}
-                
             </tbody>
-
-
         </table>
-
-
-
     </main>
-    
-
 {% endblock %}
