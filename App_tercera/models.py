@@ -31,3 +31,6 @@ class Avatar(models.Model):
     def __str__(self):
         return f"User: {self.user}  -  Imagen: {self.imagen}"
     
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    imagen = models.ImageField(upload_to='avatars/', null=True, blank=True)

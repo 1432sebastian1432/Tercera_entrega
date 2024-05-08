@@ -2,6 +2,8 @@ from django import forms
 from .models import Profesor, Alumno, Curso
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from .models import Profile
+
 
 class CursoForm(forms.Form):
     nombre = forms.CharField(max_length=30)
@@ -27,3 +29,8 @@ class UserEditForm(UserCreationForm):
         model = User
         fields = ['email','password1','password2']
         help_text = {k:"" for k in fields}
+        
+class ProfileForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ['imagen']

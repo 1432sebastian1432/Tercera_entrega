@@ -12,6 +12,10 @@ from django.contrib.auth.forms import AuthenticationForm , UserCreationForm
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
+from django.shortcuts import get_object_or_404
+from django.contrib import messages
+from .forms import ProfileForm
+from .models import Profile
 
 
 
@@ -54,20 +58,7 @@ def ver_alumnos(request):
         avatares = Avatar.objects.filter(user=request.user)
     return render(request, 'Lista_alumnos.html', {'alumnos': alumnos, 'avatares': avatares})
 
-#def ver_cursos(request):
-    cursos = Curso.objects.all()
-    dicc = {"cursos": cursos}
-    plantilla = loader.get_template("cursos.html")
-    documento = plantilla.render(dicc)
-    return HttpResponse(documento)
 
-#def ver_alumnos(request):
-   
-    alumnos = Alumno.objects.all()  
-    dicc = {"alumnos": alumnos}  
-    plantilla = loader.get_template("lista_alumnos.html")
-    documento = plantilla.render(dicc)
-    return HttpResponse(documento)
 
 def alumnos(request):
     avatares = Avatar.objects.filter(user=request.user.id)
@@ -141,28 +132,23 @@ def elimina_curso(request , id ):
 
     return render(request , "cursos.html" , {"cursos":curso})
 
-def editar(request , id):
-
-    curso = Curso.objects.get(id=id)
+def editar_curso(request, id):
+    curso = get_object_or_404(Curso, id=id)
 
     if request.method == "POST":
-
-        mi_formulario = curso_formulario_view( request.POST )
-        if mi_formulario.is_valid():
-            datos = mi_formulario.cleaned_data
-            curso.nombre = datos["nombre"]
-            curso.camada = datos["camada"]
-            curso.save()
-
-            curso = Curso.objects.all()
-
-            return render(request , "cursos.html" , {"cursos":curso})
+        nombre = request.POST.get('nombre')
+        camada = request.POST.get('camada')
         
-     
+        # Actualizar los campos del curso
+        curso.nombre = nombre
+        curso.camada = camada
+        curso.save()
+
+        messages.success(request, 'El curso se ha actualizado correctamente.')
+        return redirect('ver_cursos')
     else:
-        mi_formulario = CursoForm(initial={"nombre":curso.nombre , "camada":curso.camada})
-    
-    return render( request , "editar_curso.html" , {"mi_formulario": mi_formulario , "curso":curso})
+        # Si la solicitud es GET, mostrar el formulario con los datos del curso
+        return render(request, 'editar_curso.html', {'curso': curso})
 
 def lista_profesores(request):
     profesores = Profesor.objects.all()
@@ -185,9 +171,13 @@ def editar_alumno(request, id):
         formulario = AlumnoForm(request.POST, instance=alumno)
         if formulario.is_valid():
             formulario.save()
-            return redirect('lista_alumnos')  
-        
-    formulario = AlumnoForm(instance=alumno)
+            return redirect('ver_alumnos')  # Redirige a la vista correcta después de editar
+        else:
+            # Si el formulario no es válido, renderiza nuevamente el formulario con los errores
+            return render(request, "editar_alumno.html", {"mi_formulario": formulario, "alumno": alumno})
+    else:
+        formulario = AlumnoForm(instance=alumno)
+    
     return render(request, "editar_alumno.html", {"mi_formulario": formulario, "alumno": alumno})
 
 def ver_profesores(request):
@@ -196,17 +186,6 @@ def ver_profesores(request):
     if request.user.is_authenticated:
         avatares = Avatar.objects.filter(user=request.user)
     return render(request, 'ver_profesores.html', {'profesores': profesores, 'avatares': avatares})
-
-
-#def agregar_profesor(request):
-    if request.method == 'POST':
-        form = ProfesorModelForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('ver_profesores')
-    else:
-        form = ProfesorModelForm()
-    return render(request, 'agregar_profesor.html', {'form': form})
 
 def agregar_alumno(request):
     if request.method == 'POST':
@@ -219,17 +198,6 @@ def agregar_alumno(request):
     else:
         form = AlumnoForm()
     return render(request, 'agregar_alumno.html', {'form': form})
-
-def editar_profesor(request, id):
-    profesor = Profesor.objects.get(id=id)
-    if request.method == 'POST':
-        form = ProfesorModelForm(request.POST, instance=profesor)
-        if form.is_valid():
-            form.save()
-            return redirect('ver_profesores')
-    else:
-        form = ProfesorModelForm(instance=profesor)
-    return render(request, 'editar_profesor.html', {'form': form})
 
 def eliminar_profesor(request, id):
     
@@ -265,7 +233,8 @@ def login_request(request):
 
             if user is not None:
                 login(request , user )
-                return render( request , "inicio.html" , {"mensaje":f"Bienvenido/a {usuario}", "usuario":usuario})
+                avatares = Avatar.objects.filter(user=request.user.id)
+                return render( request , "inicio.html" , {"url":avatares[0].imagen.url})
             else:
                 return HttpResponse(f"Usuario no encontrado")
         else:
@@ -274,7 +243,6 @@ def login_request(request):
 
     form = AuthenticationForm()
     return render( request , "login.html" , {"form":form})
-
 def register(request):
     
     if request.method == "POST":
@@ -289,27 +257,14 @@ def register(request):
     return render(request , "registro.html" , {"form":form})
 
 def editar_perfil(request):
-
-    usuario = request.user
-
-    if request.method == "POST":
-        
-        mi_formulario = UserEditForm(request.POST)
-
-        if mi_formulario.is_valid():
-
-            informacion = mi_formulario.cleaned_data
-            usuario.email = informacion["email"]
-            password = informacion["password1"]
-            usuario.set_password(password)
-            usuario.save()
-            return render(request , "inicio.html")
-
+    if request.method == 'POST':
+        form = ProfileForm(request.POST, request.FILES, instance=request.user.profile)
+        if form.is_valid():
+            form.save()
+            return redirect('profile')  
     else:
-        miFormulario = UserEditForm(initial={"email":usuario.email})
-    
-    return render( request , "editar_perfil.html", {"miFormulario":miFormulario, "usuario":usuario})
-
+        form = ProfileForm(instance=request.user.profile)
+    return render(request, 'edit_profile.html', {'form': form})
 def agregar_curso(request):
     if request.method == 'POST':
         nombre = request.POST.get('nombre')
@@ -322,37 +277,53 @@ def agregar_profesor(request):
     if request.method == 'POST':
         nombre_apellido = request.POST.get('Nombre_y_Apellido')
         materia = request.POST.get('Materia')
-        Profesor.objects.create(Nombre_y_Apellido=nombre_apellido, Materia=materia)
-        return redirect('ver_profesores')
+        
+        if nombre_apellido and materia:
+            Profesor.objects.create(Nombre_y_Apellido=nombre_apellido, Materia=materia)
+            return redirect('ver_profesores')
+        else:
+            
+            error_message = "Por favor, ingrese el nombre y apellido del profesor y la materia que enseña."
+            return render(request, 'agregar_profesor.html', {'error_message': error_message})
+    
     return render(request, 'agregar_profesor.html')
 
-def login_request(request):
-    if request.method == "POST":
-        form = AuthenticationForm(request, data=request.POST)
-        if form.is_valid():
-            usuario = form.cleaned_data.get("username")
-            contra = form.cleaned_data.get("password")
-
-            user = authenticate(username=usuario, password=contra)
-            if user is not None:
-                login(request, user)
-                # Buscamos los avatares asociados al usuario
-                avatares = Avatar.objects.filter(user=user)
-                # Si hay avatares, obtenemos la URL del primero si tiene un archivo asociado
-                if avatares.exists() and avatares.first().imagen:
-                    avatar_url = avatares.first().imagen.url
-                else:
-                    avatar_url = None
-
-                return render(request, "inicio.html", {"url": avatar_url})
-            else:
-                return HttpResponse("Usuario no encontrado")
-        else:
-            return HttpResponse(f"FORM INCORRECTO {form}")
-    else:
-        form = AuthenticationForm()
-        return render(request, "login.html", {"form": form})
-    
 def logout_view(request):
     logout(request)
     return redirect('home')
+
+def guardar_curso(request, curso_id=None):
+    if curso_id:
+        curso = get_object_or_404(Curso, id=curso_id)
+    else:
+        curso = None
+
+    if request.method == 'POST':
+        form = CursoForm(request.POST, instance=curso)
+        if form.is_valid():
+            form.save()
+            return redirect('ver_cursos')  
+    else:
+        form = CursoForm(instance=curso)
+    
+    return render(request, 'formulario_curso.html', {'form': form})
+
+def editar_profesor(request, id):
+    
+    profesor = Profesor.objects.get(id=id)
+
+    if request.method == "POST":
+        
+        formulario = ProfesorModelForm(request.POST, instance=profesor)
+        if formulario.is_valid():
+            
+            formulario.save()
+            return redirect('ver_profesores')  
+        else:
+            
+            return render(request, "editar_profesor.html", {"formulario": formulario, "profesor": profesor})
+    else:
+        
+        formulario = ProfesorModelForm(instance=profesor)
+    
+    return render(request, "editar_profesor.html", {"formulario": formulario, "profesor": profesor})

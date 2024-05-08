@@ -1,32 +1,15 @@
 {% extends "padre.html" %}
-
 {% load static %}
 
-
 {% block contenido %}
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Editar Profesor</title>
-</head>
-<body>
-    <h1>Editar Profesor</h1>
-    <form action="{% url 'agregar_profesor' %}" method="post">
+    <form action="{% url 'editar_profesor' profesor.id %}" method="POST">
         {% csrf_token %}
-        <input type="hidden" name="profesor_id" value="{{ profesor.id }}">
-        
-        <label for="nombre_apellido">Nombre y Apellido:</label><br>
-        <input type="text" id="nombre_apellido" name="nombre_apellido" value="{{ profesor.nombre_apellido }}" required><br><br>
-        
-        <label for="materia">Materia:</label><br>
-        <input type="text" id="materia" name="materia" value="{{ profesor.materia }}" required><br><br>
-        
-        <button type="submit">Guardar Cambios</button>
-    </form>
-</body>
-</html>
+        <p>Nombre y Apellido</p>
+        {{ formulario.Nombre_y_Apellido }}
 
+        <p>Materia</p>
+        {{ formulario.Materia }}
+
+        <button class="btn btn-primary">Enviar</button>
+    </form>
 {% endblock %}

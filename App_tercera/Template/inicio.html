@@ -2,19 +2,22 @@
 
 {% load static %}
 
-
 {% block contenido %}
 
-   <h2>{{mensaje}}</h2>
+   <h2>{{ mensaje }}</h2>
 
    <div class="container">
         <div class="row">
-            <div class="col-12  col-md-4">
+            <div class="col-12 col-md-4">
                 <div class="card">
-                    <img src="{% static 'App_tercera/assets/img/testimonials-2.jpg' %}"/>
+                    {% if request.user.profile.imagen %}
+                        <img src="{{ request.user.profile.imagen.url }}" alt="Avatar" class="card-img-top">
+                    {% else %}
+                        <img src="{% static 'default_avatar.jpg' %}" alt="Avatar" class="card-img-top">
+                    {% endif %}
                     <div class="card-body">
-                        <h5 class="card-title">{{usuario}}</h5>
-                        <p class="card-text">Me gusto mucho el curso</p>
+                        <h5 class="card-title">{{ request.user.username }}</h5>
+                        <p class="card-text">Me gustó mucho el curso</p>
                         <a class="btn btn-success" href="">Enviar mensaje</a>                       
                         <form method="post" action="{% url 'Logout' %}">
                             {% csrf_token %}
@@ -23,13 +26,8 @@
                         <a href="{% url 'editar_perfil' %}" class="btn btn-warning">Editar</a>
                     </div>
                 </div>
-            
-
             </div>
         </div>
     </div>
-
-    
-
 
 {% endblock %}
