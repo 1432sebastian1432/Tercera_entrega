@@ -171,14 +171,16 @@ def editar_alumno(request, id):
         formulario = AlumnoForm(request.POST, instance=alumno)
         if formulario.is_valid():
             formulario.save()
-            return redirect('ver_alumnos')  # Redirige a la vista correcta después de editar
-        else:
-            # Si el formulario no es válido, renderiza nuevamente el formulario con los errores
+            return redirect('ver_alumnos')  
+            
             return render(request, "editar_alumno.html", {"mi_formulario": formulario, "alumno": alumno})
     else:
         formulario = AlumnoForm(instance=alumno)
     
     return render(request, "editar_alumno.html", {"mi_formulario": formulario, "alumno": alumno})
+
+
+
 
 def ver_profesores(request):
     profesores = Profesor.objects.all()
