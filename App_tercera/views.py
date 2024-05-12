@@ -16,7 +16,8 @@ from django.shortcuts import get_object_or_404
 from django.contrib import messages
 from .forms import ProfileForm
 from .models import Profile
-
+import logging
+from django.contrib.auth.models import User 
 
 
 def inicio(request):
@@ -221,6 +222,8 @@ def profesor_formulario_view(request):
             return render(request, "formulario.html")
     return render(request, "Resultado_busqueda_profesor.html")
 
+logger = logging.getLogger(__name__)
+
 def login_request(request):
 
     if request.method == "POST":
@@ -236,7 +239,7 @@ def login_request(request):
             if user is not None:
                 login(request , user )
                 avatares = Avatar.objects.filter(user=request.user.id)
-                return render( request , "inicio.html" , {"url":avatares[0].imagen.url})
+                return render( request , "inicio.html" )
             else:
                 return HttpResponse(f"Usuario no encontrado")
         else:
@@ -245,6 +248,8 @@ def login_request(request):
 
     form = AuthenticationForm()
     return render( request , "login.html" , {"form":form})
+
+
 def register(request):
     
     if request.method == "POST":
